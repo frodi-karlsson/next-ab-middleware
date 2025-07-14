@@ -47,10 +47,10 @@ jobs:
                     echo "Version has been bumped. Proceeding with release."
 
 
-              - name: Publish package
-                run:
-                    pnpm run build && \
-                    pnpm publish --access public --no-git-checks --no-verify-registry
+              - name: Build and publish package
+                run: |
+                    pnpm run build
+                    pnpm publish --access public
                 if: steps.version_check.outcome == 'success'
                     
                 env:
