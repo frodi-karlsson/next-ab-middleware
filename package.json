@@ -12,7 +12,7 @@
 		"test": "vitest --run --coverage",
 		"lint": "biome check",
 		"lint:fix": "biome check --fix",
-		"build": "rm -r ./dist && pnpx tsx build.ts && pnpm tsc --project tsconfig.build.json"
+		"build": "rm -rf ./dist && pnpx tsx build.ts && pnpm tsc --project tsconfig.build.json"
 	},
 	"keywords": [],
 	"author": "",
