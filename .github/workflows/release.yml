@@ -24,14 +24,35 @@ jobs:
               - name: Install dependencies
                 run: pnpm install
 
-              - name: Check code style
-                run: pnpm lint
+              - name: Get versions
+                id: get_version
+                run: |
+                    echo "version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+                    previous_version=$(git tag --sort=-v:refname | head -n 1 || echo "none")
+                    echo "previous_version=$previous_version" >> $GITHUB_ENV
 
-              - name: Build
-                run: pnpm run build
 
-              - name: Semantic Release
-                uses: cycjimmy/semantic-release-action@v4
+              - name: Check if package version has been bumped
+                id: version_check
+                run: |
+                    echo "Current version: $version"
+
+                    git fetch --tags
+                    echo "Previous version: $previous_version"
+
+                    if [ "$previous_version" != "none" ] && [ "$previous_version" == "v$current_version" ]; then
+                        echo "Version has not been bumped. Exiting."
+                        exit 1
+                    fi
+                    echo "Version has been bumped. Proceeding with release."
+
+
+              - name: Publish package
+                run:
+                    pnpm run build
+                    npm publish --access public
+                if: steps.version_check.outcome == 'success'
+                    
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
