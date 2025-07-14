@@ -29,18 +29,18 @@ jobs:
                 run: |
                     echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
                     previous_version=$(git tag --sort=-v:refname | head -n 1 || echo "none")
-                    echo "previous_version=$previous_version" >> $GITHUB_OUTPUT
+                    echo "previous_version=$(git tag --sort=-v:refname | head -n 1 || echo "none")" >> $GITHUB_OUTPUT
 
               - name: Check if package version has been bumped
                 id: version_check
                 run: |
                     current_version=${{ steps.get_version.outputs.version }}
-                    previous_version_tag=${{ steps.get_version.outputs.previous_version }} # Rename for clarity
+                    previous_version_tag=${{ steps.get_version.outputs.previous_version }}
 
                     echo "Current package.json version: $current_version"
                     echo "Latest Git tag: $previous_version_tag"
 
-                    previous_version_num=${previous_version_tag#v} # Bash string manipulation to remove 'v' prefix
+                    previous_version_num=${previous_version_tag#v}
 
                     if [ "$previous_version_tag" == "none" ]; then
                         echo "No previous tags found. This is likely the first release. Proceeding."
