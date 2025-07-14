@@ -52,6 +52,8 @@ jobs:
               - name: Build and publish package
                 run: |
                     pnpm run build
+                    echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+                    echo "Publishing package version ${{ steps.get_version.outputs.version }} to npm..."
                     pnpm publish --access public
                 if: steps.version_check.outcome == 'success'
                 env:
