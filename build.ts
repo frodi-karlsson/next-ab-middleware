@@ -14,8 +14,7 @@ async function build() {
 			bundle: true,
 			entryPoints: [path.join(__dirname, './index.ts')],
 			outfile: path.join(__dirname, './dist/index.js'),
-			format: 'esm',
-			sourcemap: true
+			format: 'esm'
 		})
 	} catch (error) {
 		console.error('❌ esbuild build failed:', error)
