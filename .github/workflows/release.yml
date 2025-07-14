@@ -11,6 +11,25 @@ jobs:
         steps:
               - name: Checkout code
                 uses: actions/checkout@v4
+              - name: Set up Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: '22'
+
+              - name: Install pnpm
+                uses: pnpm/action-setup@v2
+                with:
+                    version: 10
+
+              - name: Install dependencies
+                run: pnpm install
+
+              - name: Check code style
+                run: pnpm lint
+
+              - name: Build
+                run: pnpm run build
+
               - name: Semantic Release
                 uses: cycjimmy/semantic-release-action@v4
                 env:
