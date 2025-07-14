@@ -45,11 +45,13 @@ jobs:
 
                     if [ "$previous_version_tag" == "none" ]; then
                         echo "No previous tags found. This is likely the first release. Proceeding."
+                        echo "should_release=true" >> $GITHUB_OUTPUT
                     elif [ "$previous_version_num" == "$current_version" ]; then
                         echo "Error: Package version has not been bumped. Latest tag is '$previous_version_tag', package.json is '$current_version'."
-                        exit 1 # Exit the step to prevent further execution if version is not bumped
+                        echo "should_release=false" >> $GITHUB_OUTPUT
                     else
                         echo "Version has been bumped from '$previous_version_tag' to '$current_version'. Proceeding with release."
+                        echo "should_release=true" >> $GITHUB_OUTPUT
                     fi
 
               - name: Build and publish package
@@ -58,7 +60,7 @@ jobs:
                     echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
                     echo "Publishing package version ${{ steps.get_version.outputs.version }} to npm..."
                     pnpm publish --access public
-                if: steps.version_check.outcome == 'success'
+                if: steps.version_check.outputs.should_release == 'true'
                 env:
                     NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -68,4 +70,4 @@ jobs:
                     git config user.email "github-actions[bot]@users.noreply.github.com"
                     git tag "v${{ steps.get_version.outputs.version }}"
                     git push origin "v${{ steps.get_version.outputs.version }}"
-                if: steps.version_check.outcome == 'success'
+                if: steps.version_check.outputs.should_release == 'true'
