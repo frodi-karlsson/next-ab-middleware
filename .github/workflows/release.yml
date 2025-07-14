@@ -17,7 +17,7 @@ jobs:
                     node-version: '22'
 
               - name: Install pnpm
-                uses: pnpm/action-setup@v2
+                uses: pnpm/action-setup@v4
                 with:
                     version: 10
 
@@ -27,32 +27,42 @@ jobs:
               - name: Get versions
                 id: get_version
                 run: |
-                    echo "version=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+                    echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
                     previous_version=$(git tag --sort=-v:refname | head -n 1 || echo "none")
-                    echo "previous_version=$previous_version" >> $GITHUB_ENV
-
+                    echo "previous_version=$previous_version" >> $GITHUB_OUTPUT
 
               - name: Check if package version has been bumped
                 id: version_check
                 run: |
-                    echo "Current version: $version"
+                    current_version=${{ steps.get_version.outputs.version }}
+                    previous_version_tag=${{ steps.get_version.outputs.previous_version }} # Rename for clarity
 
-                    git fetch --tags
-                    echo "Previous version: $previous_version"
+                    echo "Current package.json version: $current_version"
+                    echo "Latest Git tag: $previous_version_tag"
 
-                    if [ "$previous_version" != "none" ] && [ "$previous_version" == "v$current_version" ]; then
-                        echo "Version has not been bumped. Exiting."
-                        exit 1
+                    previous_version_num=${previous_version_tag#v} # Bash string manipulation to remove 'v' prefix
+
+                    if [ "$previous_version_tag" == "none" ]; then
+                        echo "No previous tags found. This is likely the first release. Proceeding."
+                    elif [ "$previous_version_num" == "$current_version" ]; then
+                        echo "Error: Package version has not been bumped. Latest tag is '$previous_version_tag', package.json is '$current_version'."
+                        exit 1 # Exit the step to prevent further execution if version is not bumped
+                    else
+                        echo "Version has been bumped from '$previous_version_tag' to '$current_version'. Proceeding with release."
                     fi
-                    echo "Version has been bumped. Proceeding with release."
-
 
               - name: Build and publish package
                 run: |
                     pnpm run build
                     pnpm publish --access public
                 if: steps.version_check.outcome == 'success'
-                    
                 env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                    NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+              - name: Create Git tag
+                run: |
+                    git config user.name "github-actions[bot]"
+                    git config user.email "github-actions[bot]@users.noreply.github.com"
+                    git tag "v${{ steps.get_version.outputs.version }}"
+                    git push origin "v${{ steps.get_version.outputs.version }}"
+                if: steps.version_check.outcome == 'success'
