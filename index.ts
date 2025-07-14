@@ -1,1 +1,1 @@
-export { createABAssignmentMiddleware } from "./src/ab-middleware";
+export { createABAssignmentMiddleware } from './src/ab-middleware'
