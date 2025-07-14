@@ -1,0 +1,40 @@
+{
+  "name": "next-ab-middleware",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest --run --coverage",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "build": "rm -r ./dist && pnpx tsx build.ts && pnpm tsc --project tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.2",
+  "devDependencies": {
+    "@biomejs/biome": "^2",
+    "@types/node": "^24",
+    "@vitest/coverage-v8": "^3",
+    "esbuild": "^0.25.6",
+    "next": ">=13 <16",
+    "tsx": "^4.20.3",
+    "typescript": "^5",
+    "vitest": "^3"
+  },
+  "peerDependencies": {
+    "next": ">=13 <=16"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
+}
