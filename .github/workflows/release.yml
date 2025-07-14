@@ -49,8 +49,8 @@ jobs:
 
               - name: Publish package
                 run:
-                    pnpm run build
-                    npm publish --access public
+                    pnpm run build && \
+                    pnpm publish --access public --no-git-checks --no-verify-registry
                 if: steps.version_check.outcome == 'success'
                     
                 env:
