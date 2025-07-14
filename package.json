@@ -8,7 +8,7 @@
 	"types": "dist/index.d.ts",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/frodi-karlsson/next-ab-middleware.git"
+		"url": "git+https://github.com/frodi-karlsson/next-ab-middleware.git"
 	},
 	"files": [
 		"dist"
