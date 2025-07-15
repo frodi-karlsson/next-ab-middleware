@@ -59,7 +59,7 @@ jobs:
                 id: get_version
                 run: |
                     echo "version=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
-                    echo "$(git tag --sort=-v:refname | head -n 1 || echo "none")" >> $GITHUB_OUTPUT
+                    echo "previous_version=$(git tag --sort=-v:refname | head -n 1 || echo "none")" >> $GITHUB_OUTPUT
 
               - name: Check if package version has been bumped
                 id: version_check
