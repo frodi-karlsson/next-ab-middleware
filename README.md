@@ -86,8 +86,8 @@ export default function SomeComponent() {
   const [abVariant, setAbVariant] = useState<string | null>(null);
 
   useEffect(() => {
-    const variant = jsCookie.get('ab-middleware'); // e.g., '0' or '1'
-    setAbVariant(variant);
+    const cookie = jsCookie.get('ab-middleware');
+    setAbVariant(cookie['example-test'] || null);
   }, []);
 
   return (
